@@ -4,6 +4,7 @@ import com.ll.sbrestapi.domain.member.member.entity.Member;
 import com.ll.sbrestapi.domain.member.member.repository.MemberRepository;
 import com.ll.sbrestapi.global.rsData.RsData;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,13 +16,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public RsData<Member> join(String username, String password, String email, String nickname) {
         Member member = Member.builder()
                 .modifyDate(LocalDateTime.now())
                 .username(username)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .email(email)
                 .nickname(nickname)
                 .build();
