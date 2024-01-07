@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -100,5 +99,34 @@ public class ApiV1ArticlesControllerTest {
         Article article = articleService.findById(1L).orElse(null);
 
         assertThat(article).isNull();
+    }
+
+    @Test
+    @DisplayName("PUT /api/v1/articles/1")
+    void t4() throws Exception{
+        //when
+        ResultActions resultActions = mockMvc
+                .perform(put("/api/v1/articles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "title":"제목1-수정",
+                                    "body":"내용1-수정"
+                                }
+                                """)
+                )
+                .andDo(print());
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1ArticlesController.class))
+                .andExpect(handler().methodName("modifyArticle"))
+                .andExpect(jsonPath("$.data.item.id", instanceOf(Number.class)))
+                .andExpect(jsonPath("$.data.item.createDate", matchesPattern(DATE_PATTERN)))
+                .andExpect(jsonPath("$.data.item.modifyDate", matchesPattern(DATE_PATTERN)))
+                .andExpect(jsonPath("$.data.item.authorId", instanceOf(Number.class)))
+                .andExpect(jsonPath("$.data.item.authorName", notNullValue()))
+                .andExpect(jsonPath("$.data.item.title", is("제목1-수정")))
+                .andExpect(jsonPath("$.data.item.body", is("내용1-수정")));
     }
 }
