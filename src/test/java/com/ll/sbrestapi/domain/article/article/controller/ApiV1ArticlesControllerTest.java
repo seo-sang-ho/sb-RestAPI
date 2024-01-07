@@ -129,4 +129,33 @@ public class ApiV1ArticlesControllerTest {
                 .andExpect(jsonPath("$.data.item.title", is("제목1-수정")))
                 .andExpect(jsonPath("$.data.item.body", is("내용1-수정")));
     }
+
+    @Test
+    @DisplayName("POST /api/v1/articles")
+    void t5() throws Exception{
+        //when
+        ResultActions resultActions = mockMvc
+                .perform(post("/api/v1/articles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "title":"제목new",
+                                    "body":"내용new"
+                                }
+                                """)
+                )
+                .andDo(print());
+        //then
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(handler().handlerType(ApiV1ArticlesController.class))
+                .andExpect(handler().methodName("writeArticle"))
+                .andExpect(jsonPath("$.data.item.id", instanceOf(Number.class)))
+                .andExpect(jsonPath("$.data.item.createDate", matchesPattern(DATE_PATTERN)))
+                .andExpect(jsonPath("$.data.item.modifyDate", matchesPattern(DATE_PATTERN)))
+                .andExpect(jsonPath("$.data.item.authorId", instanceOf(Number.class)))
+                .andExpect(jsonPath("$.data.item.authorName", notNullValue()))
+                .andExpect(jsonPath("$.data.item.title", is("제목new")))
+                .andExpect(jsonPath("$.data.item.body", is("내용new")));
+    }
 }
