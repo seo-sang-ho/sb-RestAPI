@@ -26,4 +26,8 @@ public class RsData<T> {
     public boolean isFail() {
         return !isSuccess();
     }
+
+    public <T> RsData<T> of(T data){
+        return RsData.of(resultCode,msg,data);
+    }
 }
