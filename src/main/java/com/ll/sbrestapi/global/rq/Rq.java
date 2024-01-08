@@ -1,4 +1,4 @@
-package com.ll.sbrestapi.global.rq.Rq;
+package com.ll.sbrestapi.global.rq;
 
 import com.ll.sbrestapi.domain.member.member.entity.Member;
 import com.ll.sbrestapi.domain.member.member.service.MemberService;
