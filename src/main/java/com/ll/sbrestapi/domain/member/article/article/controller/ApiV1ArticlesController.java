@@ -11,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/articles")
@@ -115,8 +117,14 @@ public class ApiV1ArticlesController {
     }
 
     @PostMapping("")
-    public RsData<?> writeArticle(@RequestBody WriteArticleRequestBody body){
+    public RsData<?> writeArticle(@RequestBody WriteArticleRequestBody body, Principal principal){
         Member member = rq.getMember();
+
+        Optional.ofNullable(principal)
+                .ifPresentOrElse(
+                        p -> System.out.println("로그인 :" + p.getName()),
+                        () -> System.out.println("비로그인"));
+
         RsData<Article> writeRs = articleService.write(member, body.getTitle(), body.getBody());
 
         return writeRs.of(
