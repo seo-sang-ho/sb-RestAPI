@@ -26,16 +26,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     @SneakyThrows
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-        String username = request.getHeader("username");
-        String password = request.getHeader("password");
+        String apiKey = request.getHeader("X-apiKey");
 
-        if (username != null && password != null) {
-
-            Member member = memberService.findByUsername(username).get();
-
-            if(!passwordEncoder.matches(password,member.getPassword())){
-                throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-            }
+        if (apiKey != null) {
+            Member member = memberService.findByApiKey(apiKey).get();
 
             User user = new User(
                     member.getUsername(),
@@ -50,8 +44,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
-
-            filterChain.doFilter(request, response);
         }
+
+        filterChain.doFilter(request, response);
     }
 }
