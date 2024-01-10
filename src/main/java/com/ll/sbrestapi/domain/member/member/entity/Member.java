@@ -21,9 +21,10 @@ public class Member extends BaseEntity {
     private String password;
     private String email;
     private String nickname;
+
     @Column(unique = true)
-    @UuidGenerator(style = UuidGenerator.Style.TIME)
-    private String apiKey; // apiKey 는 최초에 한번만 들어간다.
+    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
+    private String apiKey;
 
     public String getName() {
         return nickname;
