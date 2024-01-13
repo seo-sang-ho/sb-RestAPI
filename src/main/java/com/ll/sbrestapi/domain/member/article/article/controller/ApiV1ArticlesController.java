@@ -9,9 +9,9 @@ import com.ll.sbrestapi.global.rsData.RsData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -115,8 +115,9 @@ public class ApiV1ArticlesController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("")
-    public RsData<?> writeArticle(@RequestBody WriteArticleRequestBody body, Principal principal){
+    public RsData<?> writeArticle(@RequestBody WriteArticleRequestBody body){
         Member member = rq.getMember();
 
         RsData<Article> writeRs = articleService.write(member, body.getTitle(), body.getBody());
