@@ -1,6 +1,5 @@
 package com.ll.sbrestapi.global.security;
 
-import com.ll.sbrestapi.domain.member.member.entity.Member;
 import com.ll.sbrestapi.domain.member.member.service.MemberService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,8 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,13 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String apiKey = request.getHeader("X-apiKey");
 
         if (apiKey != null) {
-            Member member = memberService.findByApiKey(apiKey).get();
-
-            User user = new User(
-                    String.valueOf(member.getId()),
-                    member.getPassword(),
-                    List.of()
-            );
+            User user = memberService.getUserFromApiKey(apiKey);
 
             Authentication auth = new UsernamePasswordAuthenticationToken(
                     user,
