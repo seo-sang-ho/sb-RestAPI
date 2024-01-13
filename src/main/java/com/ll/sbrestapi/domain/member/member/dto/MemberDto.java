@@ -11,7 +11,6 @@ public class MemberDto {
     private final LocalDateTime modifyDate;
     private final String username;
     private final String nickname;
-    private final String apiKey;
 
     public MemberDto(Member member) {
         this.id = member.getId();
@@ -19,6 +18,5 @@ public class MemberDto {
         this.modifyDate = member.getModifyDate();
         this.username = member.getUsername();
         this.nickname = member.getNickname();
-        this.apiKey = member.getApiKey();
     }
 }

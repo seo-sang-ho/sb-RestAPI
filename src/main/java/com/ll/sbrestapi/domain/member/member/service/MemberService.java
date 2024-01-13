@@ -3,14 +3,16 @@ package com.ll.sbrestapi.domain.member.member.service;
 import com.ll.sbrestapi.domain.member.member.entity.Member;
 import com.ll.sbrestapi.domain.member.member.repository.MemberRepository;
 import com.ll.sbrestapi.global.rsData.RsData;
+import com.ll.sbrestapi.global.util.jwt.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -47,7 +49,12 @@ public class MemberService {
     }
 
     public Optional<Member> findByApiKey(String apiKey) {
-        return memberRepository.findByApiKey(apiKey);
+        Claims claims = JwtUtil.decode(apiKey);
+
+        Map<String, String> data = (Map<String, String>) claims.get("data");
+        long id = Long.parseLong(data.get("id"));
+
+        return findById(id);
     }
 
     public RsData<Member> checkUsernameAndPassword(String username, String password) {
@@ -62,10 +69,5 @@ public class MemberService {
         }
 
         return RsData.of("200","로그인 성공",memberOp.get());
-    }
-
-    @Transactional
-    public void regenApiKey(Member member) {
-        member.setApiKey(UUID.randomUUID().toString());
     }
 }
