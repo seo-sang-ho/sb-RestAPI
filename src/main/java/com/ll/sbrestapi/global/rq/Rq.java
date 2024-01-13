@@ -2,12 +2,12 @@ package com.ll.sbrestapi.global.rq;
 
 import com.ll.sbrestapi.domain.member.member.entity.Member;
 import com.ll.sbrestapi.domain.member.member.service.MemberService;
+import com.ll.sbrestapi.global.security.SecurityUser;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
@@ -24,8 +24,8 @@ public class Rq {
 
     public Member getMember(){
         if(member == null){
-            User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            long memberId = Long.parseLong(user.getUsername());
+            SecurityUser user = (SecurityUser)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            long memberId = user.getId();
 
             member = entityManager.getReference(Member.class,memberId); // 프록시 모드 발동
             // member.getId(); -> 쿼리 발생 x
