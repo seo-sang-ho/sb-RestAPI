@@ -61,20 +61,54 @@ public class ApiV1MembersController {
                 )
         );
 
-        String refreshToken = JwtUtil.encode(
-                60 * 60 * 24 * 365,
-                Map.of(
-                        "id", id.toString(),
-                        "username",member.getUsername()
-                )
-        );
-
-        memberService.setRefreshToken(member,refreshToken);
+        String refreshToken = memberService.genRefreshToken(member);
 
         return RsData.of(
                 "200",
                 "로그인 성공",
                 new LoginResponseBody(member,accessToken,refreshToken)
+        );
+    }
+
+    @Getter
+    @Setter
+    public static class RefreshAccessTokenRequestBody{
+        private String refreshToken;
+    }
+
+
+    @Getter
+    public static class RefreshAccessTokenResponseBody{
+
+        private final String accessToken;
+        public RefreshAccessTokenResponseBody(String accessToken){
+            this.accessToken = accessToken;
+        }
+
+    }
+
+
+    @PostMapping("/refreshAccessToken")
+    public RsData<RefreshAccessTokenResponseBody> login(@RequestBody RefreshAccessTokenRequestBody requestBody) {
+
+        String refreshToken = requestBody.getRefreshToken();
+
+        Member member = memberService.findByRefreshToken(refreshToken).get();
+
+        Long id = member.getId();
+        String accessToken = JwtUtil.encode(
+                60 * 10,
+                Map.of(
+                        "id", id.toString(),
+                        "username",member.getUsername(),
+                        "authorities",member.getAuthoritiesAsStrList()
+                )
+        );
+
+        return RsData.of(
+                "200",
+                "엑세스 토큰 재발급 성공",
+                new RefreshAccessTokenResponseBody(accessToken)
         );
     }
 }

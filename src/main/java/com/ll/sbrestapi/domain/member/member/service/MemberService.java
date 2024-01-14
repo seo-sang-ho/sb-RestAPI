@@ -89,4 +89,27 @@ public class MemberService {
     public void setRefreshToken(Member member, String refreshToken) {
         member.setRefreshToken(refreshToken);
     }
+
+    public Optional<Member> findByRefreshToken(String refreshToken) {
+        return memberRepository.findByRefreshToken(refreshToken);
+    }
+
+    @Transactional
+    public String genRefreshToken(Member member) {
+        if(member.getRefreshToken() != null && !member.getRefreshToken().isBlank()){
+            return member.getRefreshToken();
+        }
+
+        String refreshToken = JwtUtil.encode(
+                60 * 60 * 24 * 364,
+                Map.of(
+                        "id",member.getId().toString(),
+                        "username",member.getUsername()
+                )
+        );
+
+        member.setRefreshToken(refreshToken);
+
+        return refreshToken;
+    }
 }
