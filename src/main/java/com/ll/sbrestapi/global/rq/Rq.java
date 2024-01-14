@@ -54,7 +54,7 @@ public class Rq {
         if(isLogout()) return null;
 
         if(member == null){
-            member = entityManager.find(Member.class,securityUser.getId());
+            member = entityManager.find(Member.class, getSecurityUser().getId());
         }
 
         return member;
